@@ -1,28 +1,46 @@
 Vagrant.configure(2) do |config|
-    config.vm.box = "generic/ubuntu2204"
-    #config.vm.box_url = REDACTED
+  # Box por defecto (se usa si no hay override en el provider)
+  config.vm.box = "generic/ubuntu2204"
 
-    config.vm.define "mmendiolS" do |control|
-        control.vm.hostname = "mmendiolS"
-        control.vm.network "private_network", ip: "192.168.56.110"
-        control.vm.provider "virtualbox" do |v|
-            v.customize ["modifyvm", :id, "--name", "mmendiolS"]
-            v.memory = 512
-            v.cpus = 1
-        end
+  config.vm.define "mmendiolS" do |control|
+    control.vm.hostname = "mmendiolS"
+    control.vm.network "private_network", ip: "192.168.56.110"
 
-        control.vm.provision "shell", path: "./scripts/server.sh"
+    # Provider para Intel / VirtualBox (usa la box por defecto)
+    control.vm.provider "virtualbox" do |v|
+      v.customize ["modifyvm", :id, "--name", "mmendiolS"]
+      v.memory = 1024
+      v.cpus = 1
     end
 
-    config.vm.define "mmendiolSW" do |control|
-        control.vm.hostname = "mmendiolSW"
-        control.vm.network "private_network", ip: "192.168.56.111"
-        control.vm.provider "virtualbox" do |v|
-            v.customize ["modifyvm", :id, "--name", "mmendiolSW"]
-            v.memory = 512
-            v.cpus = 1
-        end
-
-        control.vm.provision "shell", path: "./scripts/worker.sh"
+    # Provider para Apple Silicon (Mac M1/M2/M3/M4)
+    control.vm.provider "utm" do |u, override|
+      override.vm.box = "utm/bookworm"
+      u.name = "mmendiolS"
+      u.memory = 1024
+      u.cpus = 1
     end
+
+    control.vm.provision "shell", path: "./scripts/server.sh"
+  end
+
+  config.vm.define "mmendiolSW" do |control|
+    control.vm.hostname = "mmendiolSW"
+    control.vm.network "private_network", ip: "192.168.56.111"
+
+    control.vm.provider "virtualbox" do |v|
+      v.customize ["modifyvm", :id, "--name", "mmendiolSW"]
+      v.memory = 1024
+      v.cpus = 1
+    end
+
+    control.vm.provider "utm" do |u, override|
+      override.vm.box = "utm/bookworm"
+      u.name = "mmendiolSW"
+      u.memory = 1024
+      u.cpus = 1
+    end
+
+    control.vm.provision "shell", path: "./scripts/worker.sh"
+  end
 end
