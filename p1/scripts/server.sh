@@ -1,3 +1,4 @@
 #!/bin/bash
-
-curl -sfL https://get.k3s.io | sh 
+curl -sfL https://get.k3s.io | \
+K3S_TOKEN=MiTokenSecreto42 \
+sh -s - --node-ip=192.168.56.110 --flannel-iface=eth1
