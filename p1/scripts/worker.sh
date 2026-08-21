@@ -1,6 +1,6 @@
 #!/bin/bash
-
-curl -sfL https://get.k3s.io | \
-K3S_URL=https://192.168.56.110:6443 \
-K3S_TOKEN=MiTokenSecreto42 \
-sh -s - --node-ip=192.168.56.111 --flannel-iface=eth1
+curl -sfL https://get.k3s.io | sh -s - agent \
+  --server="https://192.168.56.110:6443" \
+  --token="MiTokenSecreto42" \
+  --node-ip="192.168.56.111" \
+  --flannel-iface="eth1"
