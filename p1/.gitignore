@@ -1,0 +1,37 @@
+# ==========================================
+# Vagrant & VirtualBox
+# ==========================================
+# Contiene los discos virtuales, UUIDs y estado SSH de las VMs.
+# Ocupa gigabytes y romperá la evaluación si se sube a Git.
+.vagrant/
+
+# Archivos de log generados por Vagrant o la VM
+*.log
+
+# ==========================================
+# K3s & Secretos
+# ==========================================
+# Tokens de unión compartidos o certificados kubeconfig locales
+node-token
+*.token
+kubeconfig
+
+# ==========================================
+# Archivos del Sistema Operativo (Windows / Mac)
+# ==========================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# ==========================================
+# Editores de código e IDEs
+# ==========================================
+.vscode/
+.idea/
+*.swp
+*~
