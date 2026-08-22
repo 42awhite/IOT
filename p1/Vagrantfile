@@ -2,7 +2,7 @@ Vagrant.configure(2) do |config|
     config.ssh.insert_key = false
     config.ssh.private_key_path = ["~/.vagrant.d/insecure_private_key"]
   # Box por defecto (se usa si no hay override en el provider)
-  config.vm.box = "generic/ubuntu2204"
+  config.vm.box = "bento/ubuntu-24.04"
 
   config.vm.define "mmendiolS" do |control|
     control.vm.hostname = "mmendiolS"
@@ -11,8 +11,9 @@ Vagrant.configure(2) do |config|
     # Provider para Intel / VirtualBox (usa la box por defecto)
     control.vm.provider "virtualbox" do |v|
       v.customize ["modifyvm", :id, "--name", "mmendiolS"]
-      v.memory = 1024
-      v.cpus = 1
+      v.memory = 2048
+      v.cpus = 4
+      v.gui = true # temporal: solo para ver dónde se queda el boot
     end
 
     # Provider para Apple Silicon (Mac M1/M2/M3/M4)
@@ -32,8 +33,8 @@ Vagrant.configure(2) do |config|
 
     control.vm.provider "virtualbox" do |v|
       v.customize ["modifyvm", :id, "--name", "mmendiolSW"]
-      v.memory = 1024
-      v.cpus = 1
+      v.memory = 2048
+      v.cpus = 4
     end
 
     control.vm.provider "utm" do |u, override|
