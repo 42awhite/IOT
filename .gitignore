@@ -1,0 +1,13 @@
+# Carpeta generada por la extensión "Local History" de VS Code
+.history/
+
+# Editores de código e IDEs
+.vscode/
+.idea/
+*.swp
+*~
+
+# Archivos del Sistema Operativo (Windows / Mac)
+.DS_Store
+Thumbs.db
+desktop.ini
