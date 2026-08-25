@@ -1,0 +1,37 @@
+# =========================================
+# INGRESS: recibe peticiones HTTP y decide a qué Service enviarlas
+# según el Host (app1.com, app2.com, etc.)
+# =========================================
+apiVersion: networking.k8s.io/v1   # versión fija de la API para Ingress
+kind: Ingress                      # tipo de recurso
+metadata:
+	name: apps-ingress                            # <-- nombre del ingress (ej: apps-ingress)
+	annotations:
+		kubernetes.io/ingress.class:   # <-- controlador que lo gestiona (en K3s suele ser traefik)
+spec:
+	rules:
+		- host:                        # <-- primer host (ej: app1.com)
+			http:
+				paths:
+					- path: /                # <-- cualquier ruta que empiece por /
+						pathType: Prefix       # <-- tipo de coincidencia de la ruta
+						backend:
+							service:
+								name:              # <-- nombre del Service al que mandar (ej: app1)
+								port:
+									number:          # <-- puerto del Service (ej: 80)
+		- host:                        # <-- segundo host (ej: app2.com)
+			http:
+				paths:
+					- path: /
+						pathType: Prefix
+						backend:
+							service:
+								name:              # <-- nombre del Service al que mandar (ej: app2)
+								port:
+									number:          # <-- puerto del Service (ej: 80)
+	defaultBackend:
+		service:
+			name:                        # <-- Service por defecto si no coincide ningún host (ej: app3)
+			port:
+				number:                    # <-- puerto del Service por defecto (ej: 80)

@@ -1,0 +1,40 @@
+# =========================================
+# DEPLOYMENT: define el contenedor y cuántas copias (réplicas) quieres
+# =========================================
+apiVersion: apps/v1        # versión fija de la API para Deployments, no la toques
+kind: Deployment           # tipo de recurso, no la toques
+metadata:
+  name: app2                    # <-- pon aquí el nombre de la app (ej: app1)
+  labels:
+    app: app2               # <-- mismo nombre que arriba, se usa para identificar los pods
+spec:
+  replicas: 3              # <-- cuántos pods quieres (app1 = 1)
+  selector:
+    matchLabels:
+      app: app2            # <-- DEBE coincidir con template.metadata.labels.app de abajo
+  template:                # plantilla de cada pod que se va a crear
+    metadata:
+      labels:
+        app: app2          # <-- mismo valor que selector.matchLabels.app
+    spec:
+      containers:
+        - name: app2       # <-- nombre del contenedor (puede ser igual al de la app)
+          image: hashicorp/http-echo           # <-- imagen a usar (hashicorp/http-echo)
+          args:
+            - "-text=app2"             # <-- argumento para http-echo: "-text=appX"
+          ports:
+            - containerPort: 5678 # <-- puerto donde escucha http-echo dentro del contenedor (5678)
+---
+# =========================================
+# SERVICE: expone el Deployment con un nombre estable dentro del clúster
+# =========================================
+apiVersion: v1             # versión fija de la API para Services, no la toques
+kind: Service              # tipo de recurso, no la toques
+metadata:
+  name: app2                    # <-- nombre del service (normalmente igual al de la app)
+spec:
+  selector:
+    app: app2              # <-- debe coincidir con la label "app" de los pods (arriba)
+  ports:
+    - port: 80             # <-- puerto en el que el Service escucha dentro del clúster (80)
+      targetPort: 5678     # <-- puerto real del contenedor al que reenvía (el mismo containerPort de arriba)
