@@ -13,6 +13,7 @@
 # ==========================================
 # Tokens de unión compartidos o certificados kubeconfig locales
 node-token
+token
 *.token
 kubeconfig
 
