@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-IFACE="enp0s1"
+IFACE="eth1"
 STATIC_IP="192.168.56.110"
 
 echo "==> Waiting for $IFACE to be up..."
