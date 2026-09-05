@@ -1,4 +1,19 @@
 # =========================================
+# HTML de la aplicacion
+# =========================================
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app1-html
+data:
+  index.html: |
+    <!DOCTYPE html>
+    <html>
+    <head><title>Hello Kubernetes!</title></head>
+    <body><h1>Hello from app1.</h1></body>
+    </html>
+---
+# =========================================
 # DEPLOYMENT: define el contenedor y cuántas copias (réplicas) quieres
 # =========================================
 apiVersion: apps/v1        # versión fija de la API para Deployments, no la toques
@@ -19,11 +34,17 @@ spec:
     spec:
       containers:
         - name: app1       # <-- nombre del contenedor (puede ser igual al de la app)
-          image: hashicorp/http-echo          # <-- imagen a usar (hashicorp/http-echo)
-          args:
-            - "-text=app1"             # <-- argumento para http-echo: "-text=appX"
+          image: nginx:alpine
           ports:
-            - containerPort: 5678 # <-- puerto donde escucha http-echo dentro del contenedor (5678)
+            - containerPort: 80
+          volumeMounts:
+            - name: app1-html
+              mountPath: /usr/share/nginx/html/index.html
+              subPath: index.html
+      volumes:
+        - name: app1-html
+          configMap:
+            name: app1-html
 ---
 # =========================================
 # SERVICE: expone el Deployment con un nombre estable dentro del clúster
@@ -37,4 +58,4 @@ spec:
     app: app1               # <-- debe coincidir con la label "app" de los pods (arriba)
   ports:
     - port: 80             # <-- puerto en el que el Service escucha dentro del clúster (80)
-      targetPort: 5678     # <-- puerto real del contenedor al que reenvía (el mismo containerPort de arriba)
+      targetPort: 80
