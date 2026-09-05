@@ -1,0 +1,61 @@
+# =========================================
+# HTML de la aplicacion
+# =========================================
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app1-html
+data:
+  index.html: |
+    <!DOCTYPE html>
+    <html>
+    <head><title>Hello Kubernetes!</title></head>
+    <body><h1>Hello from app1.</h1></body>
+    </html>
+---
+# =========================================
+# DEPLOYMENT: define el contenedor y cuántas copias (réplicas) quieres
+# =========================================
+apiVersion: apps/v1        # versión fija de la API para Deployments, no la toques
+kind: Deployment           # tipo de recurso, no la toques
+metadata:
+  name: app1                    # <-- pon aquí el nombre de la app (ej: app1)
+  labels:
+    app: app1               # <-- mismo nombre que arriba, se usa para identificar los pods
+spec:
+  replicas: 1              # <-- cuántos pods quieres (app1 = 1)
+  selector:
+    matchLabels:
+      app: app1            # <-- DEBE coincidir con template.metadata.labels.app de abajo
+  template:                # plantilla de cada pod que se va a crear
+    metadata:
+      labels:
+        app: app1          # <-- mismo valor que selector.matchLabels.app
+    spec:
+      containers:
+        - name: app1       # <-- nombre del contenedor (puede ser igual al de la app)
+          image: nginx:alpine
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: app1-html
+              mountPath: /usr/share/nginx/html/index.html
+              subPath: index.html
+      volumes:
+        - name: app1-html
+          configMap:
+            name: app1-html
+---
+# =========================================
+# SERVICE: expone el Deployment con un nombre estable dentro del clúster
+# =========================================
+apiVersion: v1             # versión fija de la API para Services, no la toques
+kind: Service              # tipo de recurso, no la toques
+metadata:
+  name: app1                    # <-- nombre del service (normalmente igual al de la app)
+spec:
+  selector:
+    app: app1               # <-- debe coincidir con la label "app" de los pods (arriba)
+  ports:
+    - port: 80             # <-- puerto en el que el Service escucha dentro del clúster (80)
+      targetPort: 80

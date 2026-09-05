@@ -1,13 +1,45 @@
-# Carpeta generada por la extensión "Local History" de VS Code
+# Vagrant generated files
+.vagrant/
+**/.vagrant/
+
+# VS Code and editor history
 .history/
+**/.history/
+.vscode/settings.json
+.vscode/*.code-snippets
 
-# Editores de código e IDEs
-.vscode/
-.idea/
-*.swp
-*~
-
-# Archivos del Sistema Operativo (Windows / Mac)
+# Operating system files
 .DS_Store
 Thumbs.db
-desktop.ini
+Desktop.ini
+
+# Logs and temporary files
+*.log
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# Local environment and secrets
+.env
+.env.*
+!.env.example
+**/token
+**/token.*
+*.key
+*.pem
+*.p12
+*.pfx
+
+# Terraform and local state, if used later
+.terraform/
+*.tfstate
+*.tfstate.*
+
+# Python cache, if used for helper scripts
+__pycache__/
+*.py[cod]
+
+# Node dependencies, if used for helper tools
+node_modules/
