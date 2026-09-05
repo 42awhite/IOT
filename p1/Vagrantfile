@@ -1,28 +1,52 @@
 Vagrant.configure(2) do |config|
-    config.vm.box = "generic/ubuntu2204"
-    #config.vm.box_url = REDACTED
+    config.ssh.insert_key = false
+    config.ssh.private_key_path = ["~/.vagrant.d/insecure_private_key"]
+  # Box por defecto (se usa si no hay override en el provider)
+  config.vm.box = "bento/ubuntu-24.04"
+  # Fuerza el montaje de la carpeta local p1 en /vagrant
+  config.vm.synced_folder ".", "/vagrant", type: "virtualbox"
+  config.vm.boot_timeout = 600 # margen extra: el segundo boot a veces tarda por I/O de disco
 
-    config.vm.define "mmendiolS" do |control|
-        control.vm.hostname = "mmendiolS"
-        control.vm.network "private_network", ip: "192.168.56.110"
-        control.vm.provider "virtualbox" do |v|
-            v.customize ["modifyvm", :id, "--name", "mmendiolS"]
-            v.memory = 512
-            v.cpus = 1
-        end
+  config.vm.define "mmendiolS" do |control|
+    control.vm.hostname = "mmendiolS"
+    control.vm.network "private_network", ip: "192.168.56.110"
 
-        control.vm.provision "shell", path: "./scripts/server.sh"
+    # Provider para Intel / VirtualBox (usa la box por defecto)
+    control.vm.provider "virtualbox" do |v|
+      v.customize ["modifyvm", :id, "--name", "mmendiolS"]
+      v.memory = 2048
+      v.cpus = 4
+     # v.gui = true # temporal: solo para ver dónde se queda el boot
     end
 
-    config.vm.define "mmendiolSW" do |control|
-        control.vm.hostname = "mmendiolSW"
-        control.vm.network "private_network", ip: "192.168.56.111"
-        control.vm.provider "virtualbox" do |v|
-            v.customize ["modifyvm", :id, "--name", "mmendiolSW"]
-            v.memory = 512
-            v.cpus = 1
-        end
-
-        control.vm.provision "shell", path: "./scripts/worker.sh"
+    # Provider para Apple Silicon (Mac M1/M2/M3/M4)
+    control.vm.provider "utm" do |u, override|
+      override.vm.box = "utm/bookworm"
+      u.name = "mmendiolS"
+      u.memory = 1024
+      u.cpus = 1
     end
+
+    control.vm.provision "shell", path: "./scripts/server.sh"
+  end
+
+  config.vm.define "mmendiolSW" do |control|
+    control.vm.hostname = "mmendiolSW"
+    control.vm.network "private_network", ip: "192.168.56.111"
+
+    control.vm.provider "virtualbox" do |v|
+      v.customize ["modifyvm", :id, "--name", "mmendiolSW"]
+      v.memory = 2048
+      v.cpus = 4
+    end
+
+    control.vm.provider "utm" do |u, override|
+      override.vm.box = "utm/bookworm"
+      u.name = "mmendiolSW"
+      u.memory = 1024
+      u.cpus = 1
+    end
+
+    control.vm.provision "shell", path: "./scripts/worker.sh"
+  end
 end
